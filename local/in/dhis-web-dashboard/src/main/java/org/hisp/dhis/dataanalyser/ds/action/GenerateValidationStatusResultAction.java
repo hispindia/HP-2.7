@@ -206,6 +206,7 @@ public class GenerateValidationStatusResultAction
         this.immChildOption = immChildOption;
     }
 
+    /*
     private int sDateLB;
 
     public void setSDateLB( int dateLB )
@@ -217,7 +218,22 @@ public class GenerateValidationStatusResultAction
     {
         return sDateLB;
     }
+    */
+    
 
+    private String sDateLB;
+    
+    public String getsDateLB()
+    {
+        return sDateLB;
+    }
+
+    public void setsDateLB( String sDateLB )
+    {
+        this.sDateLB = sDateLB;
+    }
+    
+    /*
     private int eDateLB;
 
     public void setEDateLB( int dateLB )
@@ -228,6 +244,19 @@ public class GenerateValidationStatusResultAction
     public int getEDateLB()
     {
         return eDateLB;
+    }
+    */
+    
+    private String eDateLB;
+   
+    public String geteDateLB()
+    {
+        return eDateLB;
+    }
+
+    public void seteDateLB( String eDateLB )
+    {
+        this.eDateLB = eDateLB;
     }
 
     private String facilityLB;
@@ -399,8 +428,10 @@ public class GenerateValidationStatusResultAction
         }
        
         // Period Related Info
-        Period startPeriod = periodService.getPeriod( sDateLB );
-        Period endPeriod = periodService.getPeriod( eDateLB );
+        //Period startPeriod = periodService.getPeriod( sDateLB );
+        //Period endPeriod = periodService.getPeriod( eDateLB );
+        Period startPeriod = periodService.getPeriod( Integer.parseInt( sDateLB ));
+        Period endPeriod = periodService.getPeriod( Integer.parseInt( eDateLB ) );
 
         PeriodType dataSetPeriodType = selDataSet.getPeriodType();       
         periodList = periodService.getPeriodsBetweenDates( dataSetPeriodType, startPeriod.getStartDate(),
