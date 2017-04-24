@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.dataelement.DataElement;
+import org.hisp.dhis.dataelement.DataElementGroup;
 import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.dataset.Section;
 import org.hisp.dhis.dataset.SectionService;
@@ -122,14 +123,14 @@ public class GenerateTabularAnalysisFormAction
     {
         return dataElements;
     }
-/*
+
     private List<DataElementGroup> dataElementGroups;
 
     public List<DataElementGroup> getDataElementGroups()
     {
         return dataElementGroups;
     }
-*/
+
     private List<Indicator> indicators;
 
     public List<Indicator> getIndicators()
@@ -279,7 +280,8 @@ public class GenerateTabularAnalysisFormAction
         }
         System.out.println(" dataElements size = "+dataElements.size());
         
-        //dataElementGroups = new ArrayList<DataElementGroup>( dataElementService.getAllDataElementGroups() );
+        dataElementGroups = new ArrayList<DataElementGroup>( dataElementService.getAllDataElementGroups() );
+        Collections.sort( dataElementGroups, new IdentifiableObjectNameComparator() );
         
         // for dataSet Sections
         sections = new ArrayList<Section>();
