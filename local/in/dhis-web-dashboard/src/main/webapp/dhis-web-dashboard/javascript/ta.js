@@ -1,29 +1,4 @@
 
-// for filter by dataelement group or section
-function checkedDataElementGroup()
-{
-	//var selectedDataElementGroups = document.getElementById("selectedDataElementGroups");
-	//clearList(selectedDataElementGroups);
-	jQuery('#availableDataElements').find('option').remove();
-	jQuery('#selectedServices').find('option').remove();
-	var chkValue=null;
-	if(document.getElementById("chkDataGrp").checked==true)
-	{
-		chkValue='true';
-	}
-	else
-	{
-		chkValue='false';
-	}	
-	jQuery('#loaderDiv').show();
-	jQuery('#dataElementGrpDiv2').load('getDataElemetGrp.action',{
-		checkValue : chkValue
-	},
-	function(){
-		jQuery('#loaderDiv').hide();
-		
-	});	
-}
 
 function ouListSelection()
 {
@@ -70,9 +45,12 @@ function getOrgUnitGroups()
 	$('#orgUnitLevelCB').removeAttr('disabled');
 	clearList( ouLevelId );
 	$("#orgUnitListCB").attr("disabled", "disabled");
-	
-
-	
+/*	
+    if( selOrgUnitId != null && selOrgUnitId != "NONE" && selOrgUnitId != "")
+    {
+        getOUDeatilsForTA( selOrgUnitId );
+    }	
+*/	
 	for(var i=0; i < orgUnitGroupIds.length; i++)
 	{
         var option = document.createElement("option");
@@ -81,12 +59,8 @@ function getOrgUnitGroups()
         option.title = orgUnitGroupNames[i];
         ouLevelId.add(option, null);
 	}
-	/*
-    if( selOrgUnitId != null && selOrgUnitId != "NONE" && selOrgUnitId != "")
-    {
-        getOUDeatilsForTA( selOrgUnitId );
-    }
-    */
+	
+	
 }
 
 
@@ -103,7 +77,7 @@ function ouSelCBChange()
          $("#orgUnitLevelCB").attr("disabled", "disabled");
         $('#ViewReport').removeAttr('disabled');
     }
-     /*
+    /*
     else
     {
 	$('#orgUnitLevelCB').removeAttr('disabled');
@@ -275,56 +249,6 @@ function deSelectionChangeFuntion( listId1, listId2 )
     getDataElements();
 }
 
-//getDataElements start
-function getDataElements()
-{
-	var checkValue = document.getElementById("hiddenChkValue").value;
-    var dataElementGroupList = document.getElementById("dataElementGroupId");
-    //var dataElementGroupId = dataElementGroupList.options[ dataElementGroupList.selectedIndex ].value;
-    
-    var dataSetSectionId = dataElementGroupList.options[ dataElementGroupList.selectedIndex ].value;
-    
-    var deSelectionList = document.getElementById("deSelection");    
-    var deOptionValue = deSelectionList.options[ deSelectionList.selectedIndex ].value;
-    
-    if ( dataSetSectionId != null )
-    {
-    	document.getElementById( "availableDataElementsFilter" ).value = "";
-    	document.getElementById( "availableDataElementsFilter" ).disabled = true;
-    	
-        if ( dataSetSectionId == 0 )
-        {
-        	document.getElementById( "availableDataElementsFilter" ).value = "";
-        	document.getElementById( "availableDataElementsFilter" ).disabled = false;
-        }
-        else
-        {
-        	document.getElementById( "availableDataElementsFilter" ).value = "";
-        	document.getElementById( "availableDataElementsFilter" ).disabled = true;
-        }    	
-        lockScreen();
-        
-    	$.post("getDataElementsForTA.action",
-		{
-			id:dataSetSectionId,
-			chkValue:checkValue,
-			deOptionValue:deOptionValue
-		},
-		function (data)
-		{
-			getDataElementsReceived(data);
-		},'xml');
-    }
-}
-
-// getDataElements end           
-
-
-
-
-
-
-/*
 function getDataElements()
 {
     var dataElementGroupList = document.getElementById("dataElementGroupId");
@@ -355,16 +279,15 @@ function getDataElements()
     	$.post("getDataElementsForTA.action",
 		{
 			id:dataSetSectionId,
-			deOptionValue:deOptionValue
+			deOptionValue:deOptionValue,
+			chkValue:"true"
 		},
 		function (data)
 		{
 			getDataElementsReceived(data);
 		},'xml');
     }
-}
-*/
-	// getDataElements end           
+}// getDataElements end           
 
 function getDataElementsReceived( xmlObject )
 {

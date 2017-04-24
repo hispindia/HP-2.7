@@ -1,33 +1,4 @@
 
-// for filter by dataelement group or section
-function checkedDataElementGroup()
-{
-	//var selectedDataElementGroups = document.getElementById("selectedDataElementGroups");
-	//clearList(selectedDataElementGroups);
-	jQuery('#availableDataElements').find('option').remove();
-	jQuery('#selectedDataElements').find('option').remove();
-	
-	var chkValue=null;
-	if(document.getElementById("chkDataGrp").checked==true)
-	{
-		chkValue='true';
-	}
-	else
-	{
-		chkValue='false';
-	}	
-	
-	jQuery('#loaderDiv').show();
-	jQuery('#dataElementGrpDiv').load('getDataElemetGrp.action',{
-		checkValue : chkValue
-	},
-	function(){
-		jQuery('#loaderDiv').hide();
-		
-	});	
-	 
-}
-
 function getOUDeatilsForSurvey( orgUnitIds )
 {
 	jQuery.postJSON("getOrgUnitName.action",{
@@ -73,6 +44,7 @@ function getOUDetailsForAARecevied(xmlObject)
 
 function getOUDeatilsForGA(orgUnitIds)
 {
+
 	$.post("getOrgUnitDetails.action",
 			{
 				orgUnitId : orgUnitIds[0],
@@ -273,56 +245,6 @@ function getOrgUnitGroupsReceived(xmlObject)
 //--------------------------------------
 function getDataElements()
 {
-    var checkValue = document.getElementById("hiddenChkValue").value;    
-    var dataElementGroupList = document.getElementById("dataElementGroupId");
-    var dataElementGroupId = dataElementGroupList.options[ dataElementGroupList.selectedIndex ].value;    
-    
-    var deSelectionList = document.getElementById("deSelection");    
-    var deOptionValue = deSelectionList.options[ deSelectionList.selectedIndex ].value;
-    
-    if ( dataElementGroupId != null )
-    {
-    	document.getElementById( "availableDataElementsFilter" ).value = "";
-    	document.getElementById( "availableDataElementsFilter" ).disabled = true;
-    	
-        if ( dataElementGroupId == 0 )
-        {
-        	document.getElementById( "availableDataElementsFilter" ).value = "";
-        	document.getElementById( "availableDataElementsFilter" ).disabled = false;
-        }
-        else
-        {
-        	document.getElementById( "availableDataElementsFilter" ).value = "";
-        	document.getElementById( "availableDataElementsFilter" ).disabled = true;
-        }
-    	
-        lockScreen();
-    	$.post("getDataElements.action",
-		{
-			 id:dataElementGroupId,
-			 chkValue:checkValue,
-			deOptionValue:deOptionValue
-		},
-		function (data)
-		{
-			getDataElementsReceived(data);
-		},'xml');
-    }
-}
-	// getDataElements end   
-
-
-
-
-
-
-
-//--------------------------------------
-//
-//--------------------------------------
-/*
-function getDataElements()
-{
     var dataElementGroupList = document.getElementById("dataElementGroupId");
     //var dataElementGroupId = dataElementGroupList.options[ dataElementGroupList.selectedIndex ].value;
     var dataSetSectionId = dataElementGroupList.options[ dataElementGroupList.selectedIndex ].value;
@@ -338,7 +260,6 @@ function getDataElements()
     	return false;
     }
 	*/
-    /*
     if ( dataSetSectionId != null )
     {
     	document.getElementById( "availableDataElementsFilter" ).value = "";
@@ -360,18 +281,15 @@ function getDataElements()
 		{
 			//id:dataElementGroupId,
 			id:dataSetSectionId,
-			deOptionValue:deOptionValue
+			deOptionValue:deOptionValue,
+			chkValue:"true"
 		},
 		function (data)
 		{
 			getDataElementsReceived(data);
 		},'xml');
     }
-}
-*/
-// getDataElements end           
-
-
+}// getDataElements end           
 
 function getDataElementsWithOutOptionCombo()
 {
@@ -446,8 +364,7 @@ function getDataElementsReceived( xmlObject )
     unLockScreen(); 
 // If the list of available dataelements is empty, an empty placeholder will be added
 //addOptionPlaceHolder( availableDataElements );
-}
-	// getDataElementsReceived end
+}// getDataElementsReceived end
 
 
 function getDataElementGroupsReceived( xmlObject )

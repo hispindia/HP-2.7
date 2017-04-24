@@ -70,32 +70,29 @@ function formValidationsDataElementAnalysis()
     	alert("Please Select OrganisationUnit");
     	return false;
     }
-    
     else if( selDEListSize <= 0 ) 
 	{
     	alert( "Please Select DataElement(s)" );
     	return false;
 	}
-    
     else if( selOUGroupSetListLength <= 0 ) 
 	{
         alert( "Please Select OrganisationUnit Set" );
         return false;
 	}
-   
-   else if( startDateValue == null || startDateValue== "" ) 
-   { 
+    else if( startDateValue == null || startDateValue== "" ) 
+    { 
 	   alert("Please Select Start Date"); 
 	   return false; 
-   }
-
-   else if( endDateValue == null || endDateValue=="" ) 
-   { 
+    }
+    else if( endDateValue == null || endDateValue=="" ) 
+    { 
 	   alert("Please Select End Date"); 
 	   return false; 
-   }    
+    }    
     
-  	generateDataElementAnalysisResult();
+    return true;
+  	//generateDataElementAnalysisResult();
 } 
 
 function generateDataElementAnalysisResult()

@@ -433,10 +433,10 @@ function formValidationsDataElement()
     var k = 0;
 
     if(  selDEListSize <= 0 ) 
-	{
-    	alert( "Please Select DataElement(s)" );
-    	return false;
-	}
+		{
+	        alert( "Please Select DataElement(s)" );
+	        return false;
+		}
     
     else if(  selOUListLength <= 0 ) 
 		{

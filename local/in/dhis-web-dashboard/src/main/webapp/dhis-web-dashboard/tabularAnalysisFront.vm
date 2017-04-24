@@ -19,13 +19,6 @@
 </div>
 
 <script>
-    jQuery(document).ready(function() {
-    checkedDataElementGroup();    
-    });
-</script>
-
-
-<script>
     
     // Global Variables
     var dailyPeriodTypeName = '$dailyPeriodTypeName';
@@ -125,11 +118,17 @@
         </colgroup>
 
         <tr>
-            <td class="NormalB">$i18n.getString( "ga_filter_by_degroup_section" )<br>
-                #parse( "dhis-web-commons/loader/loader.vm" )
-                <div id="dataElementGrpDiv2" name="dataElementGrpDiv2"></div>
-            </td>
-               
+            <td class="NormalB">$i18n.getString( "ga_filter_by_degroup" )<br>
+                <select id="dataElementGroupId" name="dataElementGroupId" style="width:350px" onchange="getDataElements()">
+                    <option value="0">[ Select DataElementGroup / All ]</option>                                    
+                        #foreach ( $degroup in $dataElementGroups )
+                        	<option value="$degroup.id" title="$degroup.name">$degroup.name</option>              
+                    	#end
+                        ##foreach ( $section in $sections )
+                        	<!--<option value="$section.id" title="$section.name">$section.name</option>-->           
+                    	##end                    
+                </select>
+            </td>   
             <td class="NormalB">&nbsp;</td>
             <td class="NormalB">$i18n.getString( "compare_view" )<br>
                 <select id="deSelection" name="deSelection" style="width:350px" onchange="deSelectionChangeFuntion( 'availableDataElements', 'selectedServices' )">
@@ -147,7 +146,7 @@
         <tr>
      	    <td class="NormalB">$i18n.getString( "filter" ):&nbsp;<input type="text" id="availableDataElementsFilter" onkeyup="filterAvailableDataElements()" style="min-width:26em"></td>
             <td class="NormalB">&nbsp;</td>
-            <td class="NormalB">$i18n.getString( "ga_filter_by_degroup" ) &nbsp;<input type="checkbox" checked="true" id="chkDataGrp" onchange="checkedDataElementGroup()"/></td>
+            <td class="NormalB">&nbsp;</td>
         </tr>                           
         <tr>
             <td class="NormalB">$i18n.getString( "ga_available_delist" )<br>
@@ -327,17 +326,17 @@
 
 <script type="text/javascript">
 
-	var availableDataElements = new Object();	
-    #foreach ( $availableDataElement in $dataElements )
-    	availableDataElements['D:'+'$availableDataElement.id'] = '$encoder.jsEscape( $availableDataElement.name, "'" )';
-    #end
-	
+       var availableDataElements = new Object();        
+   #foreach ( $availableDataElement in $dataElements )
+           availableDataElements['D:'+'$availableDataElement.id'] = '$encoder.jsEscape( $availableDataElement.name, "'" )';
+   #end
+       
 </script>
 <script type="text/javascript">
 
-	var availableIndicators = new Object();	
-    #foreach ( $availableIndicator in $indicators )
-    	availableIndicators['I:'+'$availableIndicator.id'] = '$encoder.jsEscape( $availableIndicator.name, "'" )';
-    #end
+       var availableIndicators = new Object();        
+   #foreach ( $availableIndicator in $indicators )
+           availableIndicators['I:'+'$availableIndicator.id'] = '$encoder.jsEscape( $availableIndicator.name, "'" )';
+   #end
 
 </script>
