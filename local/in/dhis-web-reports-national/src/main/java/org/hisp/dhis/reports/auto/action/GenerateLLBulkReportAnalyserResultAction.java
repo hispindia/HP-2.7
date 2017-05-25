@@ -602,7 +602,7 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
              * Just commented for testing purpose
              */
             //aggDeForLLDeathMap.putAll( reportService.getLLDeathDataFromLLDataValueTable( currentOrgUnit.getId(), dataElmentIdsForLLDeathByComma, periodIdsByComma, llDeathRecordNoByComma ) );
-            
+            aggDeForLLDeathMap.putAll( reportService.getLLDeathDataFromLLDataValueTable( currentOrgUnit.getId(), dataElmentIdsForLLDeathByComma, periodIdsByComma, llDeathRecordNoByComma ) );
             
             
             // for Line Listing Death DataElements
@@ -761,7 +761,9 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
                                 if ( sType.equalsIgnoreCase( "lldeathdataelementage" ) )
                                 {
                                     if ( tempLLDeathValuStr.trim().equalsIgnoreCase( "B1DAY" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1WEEK" ) 
-                                        || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1MONTH" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1YEAR" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B5YEAR" ) )
+                                        || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1MONTH" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1YEAR" ) 
+                                        || tempLLDeathValuStr.trim().equalsIgnoreCase( "B5YEAR" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "O5YEAR" ) 
+                                        || tempLLDeathValuStr.trim().equalsIgnoreCase( "O15YEAR" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "O55YEAR" ) )
                                     {
                                         isBelow1Day = true;
                                         
@@ -965,7 +967,7 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
              */
 
             //aggDeForLLMaternalDeathMap.putAll( reportService.getLLDeathDataFromLLDataValueTable( currentOrgUnit.getId(), dataElmentIdsForMaternalDeathByComma, periodIdsByComma, llMaternalDeathRecordNoByComma ) );
-            
+        aggDeForLLMaternalDeathMap.putAll( reportService.getLLDeathDataFromLLDataValueTable( currentOrgUnit.getId(), dataElmentIdsForMaternalDeathByComma, periodIdsByComma, llMaternalDeathRecordNoByComma ) );
             
             // int testRowNo = 0;
 

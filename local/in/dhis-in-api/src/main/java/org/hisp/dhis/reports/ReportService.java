@@ -163,6 +163,7 @@ public interface ReportService
     
     //Map<String, String> getLLDeathDataFromLLDataValueTable( Integer orgunitId, String dataElmentIdsForLLDeathByComma, String periodIdsByComma , Integer recordNo );
     Map<String, String> getLLDeathDataFromLLDataValueTable( String orgUnitIdsByComma, String dataElmentIdsForLLDeathByComma, String periodIdsByComma );
+    Map<String, String> getLLDeathDataFromLLDataValueTable( Integer orgunitId, String dataElmentIdsForLLDeathByComma, String periodIdsByComma , String recordNoByComma );
     
     Map<String, String> getAggDataFromDataValueTableForOrgUnitWise( String orgUnitIdsByComma, String dataElmentIdsByComma, String periodIdsByComma );
     

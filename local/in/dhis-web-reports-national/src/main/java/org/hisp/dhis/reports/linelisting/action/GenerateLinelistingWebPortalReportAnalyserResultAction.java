@@ -1054,7 +1054,8 @@ public class GenerateLinelistingWebPortalReportAnalyserResultAction
                                
                                 if ( tempLLDeathValuStr.trim().equalsIgnoreCase( "B1DAY" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1WEEK" ) 
                                     || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1MONTH" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "B1YEAR" ) 
-    				|| tempLLDeathValuStr.trim().equalsIgnoreCase( "B5YEAR" ) )
+                                    || tempLLDeathValuStr.trim().equalsIgnoreCase( "B5YEAR" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "O5YEAR" ) 
+                                    || tempLLDeathValuStr.trim().equalsIgnoreCase( "O15YEAR" ) || tempLLDeathValuStr.trim().equalsIgnoreCase( "O55YEAR" ) )
                                 {
                                     isBelow1Day = true;
                                     

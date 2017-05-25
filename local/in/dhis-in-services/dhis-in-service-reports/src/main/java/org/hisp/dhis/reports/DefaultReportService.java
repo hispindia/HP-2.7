@@ -3514,6 +3514,58 @@ public class DefaultReportService
         }
     }
 
+    public Map<String, String> getLLDeathDataFromLLDataValueTable( Integer orgunitId,
+        String dataElmentIdsForLLDeathByComma, String periodIdsByComma, String recordNoByComma )
+    {
+        Map<String, String> aggDeForLLDeathMap = new HashMap<String, String>();
+        // DatabaseInfo dataBaseInfo = databaseInfoProvider.getDatabaseInfo();
+        try
+        {
+            String query = "";
+            query = "SELECT value,dataelementid,categoryoptioncomboid,recordno FROM lldatavalue"
+                + " WHERE dataelementid IN (" + dataElmentIdsForLLDeathByComma + " ) AND " + " sourceid = " + orgunitId
+                + " AND " + " periodid IN (" + periodIdsByComma + ") AND recordno IN  (" + recordNoByComma + ")";
+
+            SqlRowSet rs = jdbcTemplate.queryForRowSet( query );
+
+            String tempValue = "";
+
+            while ( rs.next() )
+            {
+                tempValue = rs.getString( 1 );
+                Integer deId = rs.getInt( 2 );
+                Integer optionComId = rs.getInt( 3 );
+                Integer recordNo = rs.getInt( 4 );
+                // Double aggregatedValue = rs.getDouble( 3 );
+                if ( tempValue != null )
+                {
+                    aggDeForLLDeathMap.put( deId + "." + optionComId + ":" + recordNo, "" + tempValue );
+                }
+            }
+
+            return aggDeForLLDeathMap;
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( "Illegal DataElement id", e );
+        }
+    }    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     public Map<String, String> getAggDataFromDataValueTableForOrgUnitWise( String orgUnitIdsByComma,
         String dataElmentIdsByComma, String periodIdsByComma )
