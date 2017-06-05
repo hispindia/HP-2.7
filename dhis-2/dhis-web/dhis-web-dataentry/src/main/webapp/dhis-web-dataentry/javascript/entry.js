@@ -292,3 +292,59 @@ function ValueSaver( dataElementId_, optionComboId_, organisationUnitId_, period
         $( '#' + dataValue.dataElementId + '-' + dataValue.optionComboId + '-val' ).css( 'background-color', color );
     }
 }
+
+//----------------------------------------------------------DistrictStockDataSet--------------------------------------------------
+
+function calculatedDataValueForNextMonthOpeningBallance( selectedInputIdBFPM, selectedInputIdSR, selectedInputIdU, selectedInputIdSD )
+	{
+		var selectedOrganisationUnit = $( '#selectedOrganisationUnit' ).val();
+		var selectedPeriod = $( '#selectedPeriodId' ).val();
+	
+		var selectedInputId_BFPM_Temp = selectedInputIdBFPM.split( '-' );
+		var selectedDataElementID_BFPM = selectedInputId_BFPM_Temp[0];
+		var selectedDataElementCOCID_BFPM = selectedInputId_BFPM_Temp[1];
+		var selectedDataElementValue_BFPM = document.getElementById(selectedInputIdBFPM).value;
+
+		var selectedInputId_SR_Temp = selectedInputIdSR.split( '-' );
+		var selectedDataElementID_SR = selectedInputId_SR_Temp[0];
+		var selectedDataElementCOCID_SR = selectedInputId_SR_Temp[1];
+		var selectedDataElementValue_SR = document.getElementById(selectedInputIdSR).value;
+
+		var selectedInputId_U_Temp = selectedInputIdU.split( '-' );
+		var selectedInputId_U = selectedInputId_U_Temp[0];
+		var selectedDataElementCOCID_U = selectedInputId_U_Temp[1];
+		var selectedDataElementValue_U = document.getElementById(selectedInputIdU).value;
+
+		var selectedInputId_SD_Temp = selectedInputIdSD.split( '-' );
+		var selectedDataElementID_SD = selectedInputId_SR_Temp[0];
+		var selectedDataElementCOCID_SD = selectedInputId_SR_Temp[1];
+		var selectedDataElementValue_SD = document.getElementById(selectedInputIdSD).value;
+
+		var selectedDataElementTSValue =  ( (selectedDataElementValue_BFPM + selectedDataElementValue_SR)
+										- (selectedDataElementValue_U + selectedDataElementValue_SD) );
+	  
+		var nextMonthExternalPeriodId = getNextMonthExternalPeriodId( selectedPeriod );
+		//alert("nextMonthExternalPeriodId:" + nextMonthExternalPeriodId);
+	  
+		ValueSaver( selectedDataElementID_BFPM, selectedDataElementCOCID_BFPM, organisationUnitId, 
+					nextMonthExternalPeriodId, selectedDataElementTSValue, fieldId, resultColor );					
+	}
+
+function getNextMonthExternalPeriodId( selectedPeriod )
+	{
+	   var temp = selectedPeriod.split('_');
+	   var temp0 = temp[0];
+	   var temp1 = temp[1];
+	   var temp2 = temp1.split('-');
+	   var temp3 = parseInt(temp2[0]);
+	   var temp4 = parseInt(temp2[1]);
+	   var temp5 = parseInt(temp2[2]);
+	   if(temp4 == 12){
+			temp3 = temp3 + 1;
+			temp4 = 01;
+	   }else{
+			temp4 = temp4 + 01;
+	   }
+	   var temp6 = temp0 + "_" + temp3 + "-" + temp4 + "-" + temp5 ;
+	   return temp6;
+	}
