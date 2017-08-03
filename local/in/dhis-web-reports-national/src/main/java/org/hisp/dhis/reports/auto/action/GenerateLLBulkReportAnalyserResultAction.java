@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,31 +27,19 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import jxl.CellType;
-import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
 import jxl.format.BorderLineStyle;
-import jxl.format.CellFormat;
 import jxl.format.VerticalAlignment;
-import jxl.write.Blank;
-import jxl.write.Label;
-import jxl.write.Number;
-import jxl.write.WritableCell;
 import jxl.write.WritableCellFormat;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-
-
 import org.hisp.dhis.config.Configuration_IN;
+import org.hisp.dhis.dataelement.DataElementCategoryService;
+import org.hisp.dhis.dataelement.DataElementService;
 import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
@@ -62,12 +52,6 @@ import org.hisp.dhis.reports.Report_inDesign;
 import org.hisp.dhis.system.util.MathUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import com.opensymphony.xwork2.Action;
 
@@ -189,6 +173,9 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
     private Map<String, String> resMap;
 
     private Map<String, String> resMapForDeath;
+    
+    private SimpleDateFormat simpleDateMonthYearFormat;
+    
     // -------------------------------------------------------------------------
     // Action Implementation
     // -------------------------------------------------------------------------
@@ -203,6 +190,7 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
         monthFormat = new SimpleDateFormat( "MMMM" );
         yearFormat = new SimpleDateFormat( "yyyy" );
         simpleMonthFormat = new SimpleDateFormat( "MMM" );
+        simpleDateMonthYearFormat = new SimpleDateFormat( "dd/MM/yyyy" );
         String parentUnit = "";
         
         Report_in selReportObj =  reportService.getReport( Integer.parseInt( reportList ) );
@@ -260,8 +248,10 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
         
         // Getting DataValues
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
-        List<Report_inDesign> reportDesignListLLDeath = reportService.getLLDeathReportDesignList( deCodesXMLFileName );
-        List<Report_inDesign> reportDesignListLLMaternalDeath = reportService.getLLMaternalDeathReportDesignList( deCodesXMLFileName );
+        //List<Report_inDesign> reportDesignListLLDeath = reportService.getLLDeathReportDesignList( deCodesXMLFileName );
+        //List<Report_inDesign> reportDesignListLLMaternalDeath = reportService.getLLMaternalDeathReportDesignList( deCodesXMLFileName );
+        List<Report_inDesign> reportDesignListLLDeath = reportService.getReportDesign( deCodesXMLFileName );
+        List<Report_inDesign> reportDesignListLLMaternalDeath = reportService.getReportDesign( deCodesXMLFileName );
         
         // collect dataElementIDs by commaSepareted
         String dataElmentIdsByComma = reportService.getDataelementIds( reportDesignList );
@@ -319,6 +309,8 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
                 String sType = report_inDesign.getStype();
                 String deCodeString = report_inDesign.getExpression();
                 String tempStr = "";
+                String tempadeInAdeStr = "";
+                String tempStr1 = "";
 
                 Calendar tempStartDate = Calendar.getInstance();
                 Calendar tempEndDate = Calendar.getInstance();
@@ -394,6 +386,7 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
                 else if( deCodeString.equalsIgnoreCase( "NA" ) )
                 {
                     tempStr = " ";
+                    tempadeInAdeStr = " ";
                 } 
                 else
                 {
@@ -475,7 +468,29 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
                   
                        // tempStr = getAggVal( deCodeString, aggDeMap );
                         //tempStr = reportService.getResultDataValue( deCodeString, tempStartDate.getTime(), tempEndDate.getTime(), currentOrgUnit, reportModelTB );
-                    } 
+                    }
+                    // for added new dataElement in GOI Report
+                    else if ( sType.equalsIgnoreCase( "dataelement-date" ) )
+                    {
+                    	if( aggData.equalsIgnoreCase( USECAPTUREDDATA ) ) 
+                        {
+                            String tempDateString = getStringDataFromDataValue( deCodeString, selectedPeriod.getId(),currentOrgUnit.getId() );
+                            if( tempDateString != null && !tempDateString.equalsIgnoreCase(""))
+                            {
+                            	Date tempDate = format.parseDate( tempDateString );
+                                tempStr = simpleDateMonthYearFormat.format(tempDate);
+                            }
+                            System.out.println( " USECAPTUREDDATA  SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr );
+                        }
+                    }
+                    else if ( sType.equalsIgnoreCase( "dataelement-string" ) )
+                    {
+                    	if( aggData.equalsIgnoreCase( USECAPTUREDDATA ) ) 
+                        {
+                    		tempadeInAdeStr = getStringDataFromDataValue( deCodeString, selectedPeriod.getId(),currentOrgUnit.getId() );
+                            //System.out.println( " USECAPTUREDDATA  SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr );
+                        }
+                    }
                     else if ( sType.equalsIgnoreCase( "dataelement-boolean" ) )
                     {
                         tempStr = reportService.getBooleanDataValue(deCodeString, tempStartDate.getTime(), tempEndDate.getTime(), currentOrgUnit, reportModelTB);
@@ -569,19 +584,84 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
                     }
                     */
                     
-                    try
+                    if ( sType.equalsIgnoreCase( "dataelement" ) )
                     {
-                        //sheet0.addCell( new Number( tempColNo, tempRowNo, Double.parseDouble( tempStr ), wCellformat ) );
-                        Row row = sheet0.getRow( tempRowNo );
-                        Cell cell = row.getCell( tempColNo );
-                        cell.setCellValue( Double.parseDouble( tempStr ) );
+                    	 try
+                         {
+                    		 Row row = sheet0.getRow( tempRowNo );
+                             Cell cell = row.getCell( tempColNo );
+//                             if (cell.getCellType() == Cell.CELL_TYPE_BLANK){
+//                            	    cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+//                            }  
+                             cell.setCellValue( Double.parseDouble( tempStr ) );
+                             
+                         }
+                         catch ( Exception e )
+                         {
+                             //sheet0.addCell( new Label( tempColNo, tempRowNo, tempStr, wCellformat ) );
+                         	
+                             Row row = sheet0.getRow( tempRowNo );
+                             Cell cell = row.getCell( tempColNo );
+                             cell.setCellValue( tempStr );
+                         }
+                         
                     }
-                    catch( Exception e )
+                   
+                    else if ( sType.equalsIgnoreCase( "dataelement-date" ) )
                     {
-                        //sheet0.addCell( new Label( tempColNo, tempRowNo, tempStr, wCellformat ) );
-                        Row row = sheet0.getRow( tempRowNo );
-                        Cell cell = row.getCell( tempColNo );
-                        cell.setCellValue( tempStr );
+                        try
+                        {
+                            Row row = sheet0.getRow( tempRowNo );
+                            Cell cell = row.getCell( tempColNo );
+                            cell.setCellValue( tempStr );
+                            
+                        }
+                        catch ( Exception e )
+                        {
+                        	//System.out.println( " Exception : " + e.getMessage() );
+                        	Row row = sheet0.getRow( tempRowNo );
+                        	Cell cell = row.getCell( tempColNo );
+                        	cell.setCellValue( tempStr );
+                        }
+                    }
+                    
+                    else if ( sType.equalsIgnoreCase( "dataelement-string" ) )
+                    {
+                        
+                    	if ( tempadeInAdeStr != null && tempadeInAdeStr.equalsIgnoreCase("0") )
+                        {
+                            tempStr1 = "59";
+                            tempadeInAdeStr = "Adequate";
+                        }
+                    	else if ( tempadeInAdeStr != null && tempadeInAdeStr.equalsIgnoreCase("1") )
+                        {
+                            tempStr1 = "60";
+                            tempadeInAdeStr = "Inadequate";
+                        }
+                        else
+                        {
+                        }
+                    	try
+                        {
+                            Row row = sheet0.getRow( tempRowNo );
+                            
+                            Cell cell_1 = row.getCell( tempColNo - 1 );
+                            cell_1.setCellValue( tempStr1 );
+                            
+                            Cell cell_2 = row.getCell( tempColNo );
+                            cell_2.setCellValue( tempadeInAdeStr );
+                        }
+                        catch ( Exception e )
+                        {
+                            //sheet0.addCell( new Label( tempColNo, tempRowNo, tempStr, wCellformat ) );
+                            Row row = sheet0.getRow( tempRowNo );
+                            
+                            Cell cell_1 = row.getCell( tempColNo - 1 );
+                            cell_1.setCellValue( tempStr1 );
+                            
+                            Cell cell = row.getCell( tempColNo );
+                            cell.setCellValue( tempadeInAdeStr );
+                        }
                     }
                 }
                 
@@ -1670,5 +1750,62 @@ public class GenerateLLBulkReportAnalyserResultAction implements Action
         
         return recordNoByComma;
     }
-
+    // get capture data for which dataType String or date
+    public String getStringDataFromDataValue( String formula, Integer periodId, Integer organisationUnitId )
+    {
+        Statement st1 = null;
+        ResultSet rs1 = null;
+        // System.out.println( "Inside LL Data Value Method" );
+        String query = "";
+        String resultValue = "";
+        try
+        {
+            // int deFlag1 = 0;
+            // int deFlag2 = 0;
+            Pattern pattern = Pattern.compile( "(\\[\\d+\\.\\d+\\])" );
+    
+            Matcher matcher = pattern.matcher( formula );
+            StringBuffer buffer = new StringBuffer();
+    
+            while ( matcher.find() )
+            {
+                String replaceString = matcher.group();
+    
+                replaceString = replaceString.replaceAll( "[\\[\\]]", "" );
+                String optionComboIdStr = replaceString.substring( replaceString.indexOf( '.' ) + 1, replaceString
+                    .length() );
+    
+                replaceString = replaceString.substring( 0, replaceString.indexOf( '.' ) );
+    
+                int dataElementId = Integer.parseInt( replaceString );
+                int categoryOptionComboId = Integer.parseInt( optionComboIdStr );
+    
+                query = "SELECT value FROM datavalue WHERE sourceid = " + organisationUnitId
+                        + " AND periodid = " + periodId + " AND dataelementid = " + dataElementId + " AND categoryoptioncomboid = " + categoryOptionComboId;
+                
+                SqlRowSet sqlResultSet = jdbcTemplate.queryForRowSet( query );
+    
+                if ( sqlResultSet.next() )
+                {
+                	resultValue = sqlResultSet.getString( 1 );
+                }
+    
+            }
+    
+            //System.out.println( "resultValue - " + resultValue);
+            
+        }
+        catch ( NumberFormatException ex )
+        {
+            throw new RuntimeException( "Illegal DataElement id", ex );
+        }
+        catch ( Exception e )
+        {
+            System.out.println( "SQL Exception : " + e.getMessage() );
+            return null;
+        }
+        
+        return resultValue;
+    }    
+    
 }

@@ -6,7 +6,6 @@ import static org.hisp.dhis.system.util.ConversionUtils.getIdentifiers;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,10 +17,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import jxl.CellType;
+import jxl.Workbook;
+import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
+import jxl.format.CellFormat;
+import jxl.write.Blank;
+import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.WritableCell;
+import jxl.write.WritableCellFormat;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+
+import org.amplecode.quick.StatementManager;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.config.Configuration_IN;
 import org.hisp.dhis.i18n.I18nFormat;
@@ -35,7 +45,7 @@ import org.hisp.dhis.reports.Report_inDesign;
 
 import com.opensymphony.xwork2.Action;
 
-public class GenerateUpwardReportAnalyserResultAction
+public class GenerateUpwardReportAnalyserResultAction_before_poi
     implements Action
 {
 
@@ -220,15 +230,11 @@ public class GenerateUpwardReportAnalyserResultAction
         sDate = format.parseDate( String.valueOf( selectedPeriod.getStartDate() ) );
 
         eDate = format.parseDate( String.valueOf( selectedPeriod.getEndDate() ) );
-        
-        /*
+
         Workbook templateWorkbook = Workbook.getWorkbook( new File( inputTemplatePath ) );
+
         WritableWorkbook outputReportWorkbook = Workbook.createWorkbook( new File( outputReportPath ), templateWorkbook );
-		*/
-        
-        FileInputStream tempFile = new FileInputStream( new File( inputTemplatePath ) );
-        HSSFWorkbook apachePOIWorkbook = new HSSFWorkbook( tempFile );
-        
+
         // Getting DataValues
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
         int orgUnitCount = 0;
@@ -439,13 +445,18 @@ public class GenerateUpwardReportAnalyserResultAction
                 int tempRowNo = report_inDesign.getRowno();
                 int tempColNo = report_inDesign.getColno();
                 int sheetNo = report_inDesign.getSheetno();
-                
-                //WritableSheet sheet0 = outputReportWorkbook.getSheet( sheetNo );
-                Sheet sheet0 = apachePOIWorkbook.getSheetAt( sheetNo );
+                WritableSheet sheet0 = outputReportWorkbook.getSheet( sheetNo );
                 
                 if ( tempStr == null || tempStr.equals( " " ) )
                 {
                     tempColNo += orgUnitCount;
+        
+                    WritableCellFormat wCellformat = new WritableCellFormat();
+                    wCellformat.setBorder( Border.ALL, BorderLineStyle.THIN );
+                    wCellformat.setWrap( true );
+                    wCellformat.setAlignment( Alignment.CENTRE );
+        
+                    sheet0.addCell( new Blank( tempColNo, tempRowNo, wCellformat ) );
                 } 
                 else
                 {
@@ -476,7 +487,6 @@ public class GenerateUpwardReportAnalyserResultAction
                         }
                     }
     
-                    /*
                     WritableCell cell = sheet0.getWritableCell( tempColNo, tempRowNo );
     
                     CellFormat cellFormat = cell.getCellFormat();
@@ -502,21 +512,6 @@ public class GenerateUpwardReportAnalyserResultAction
                             sheet0.addCell( new Label( tempColNo, tempRowNo, tempStr, wCellformat ) );
                         }
                     }
-                    */
-                    
-                    try
-                    {
-                        Row row = (Row) sheet0.getRow( tempRowNo );
-                        Cell cell = (Cell) row.getCell( tempColNo );
-                        cell.setCellValue( Double.parseDouble( tempStr ) );
-                        
-                    }
-                    catch ( Exception e )
-                    {
-                    	Row row = (Row) sheet0.getRow( tempRowNo );
-                        Cell cell = (Cell) row.getCell( tempColNo );
-                        cell.setCellValue( tempStr );
-                    }
                 }
                 
                 count1++;
@@ -524,26 +519,21 @@ public class GenerateUpwardReportAnalyserResultAction
             orgUnitCount++;
         }// outer while loop end
 
-        //outputReportWorkbook.write();
-        //outputReportWorkbook.close();
+        outputReportWorkbook.write();
+        outputReportWorkbook.close();
+
         fileName = reportFileNameTB.replace( ".xls", "" );
         fileName += "_" + orgUnitList.get( 0 ).getShortName() + "_";
         fileName += "_" + simpleDateFormat.format( selectedPeriod.getStartDate() ) + ".xls";
-        tempFile.close(); //Close the InputStream
-        
-        FileOutputStream output_file = new FileOutputStream( new File(  outputReportPath ) );  
-
-    	//private String outputReportPath;
-        
-        apachePOIWorkbook.write( output_file ); //write changes
-          
-        output_file.close();  //close the stream   
-        System.out.println( orgUnitList.get( 0 ).getName()+ " : " + selReportObj.getName()+" Report Generation End Time is : " + new Date() );
-        
         File outputReportFile = new File( outputReportPath );
         inputStream = new BufferedInputStream( new FileInputStream( outputReportFile ) );
-        
+
+        System.out.println( orgUnitList.get( 0 ).getName()+ " : " + selReportObj.getName()+" Report Generation End Time is : " + new Date() );
+
         outputReportFile.deleteOnExit();
+
+        //statementManager.destroy();
+
         return SUCCESS;
     }
 }
