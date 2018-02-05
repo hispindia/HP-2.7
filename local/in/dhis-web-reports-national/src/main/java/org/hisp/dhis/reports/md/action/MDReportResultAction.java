@@ -577,11 +577,11 @@ public class MDReportResultAction  implements Action
             deCount++;
         }
         
+        System.out.println( " Selected DataElements Size : - "  + selectedDataElements.size() );
+        
         String mainHeaderInfo = "OrgUnit Name is "+ selOrgUnit.getShortName() + " From : " + simpleDateFormat.format( sDate ) + " To : "+ simpleDateFormat.format( eDate );
         sheet0.mergeCells( 0, 0, tempLavelCount + deCount, 0 );
         sheet0.addCell( new Label( 0, 0, mainHeaderInfo, getCellFormat2() ) );
-        
-        
         
         sheet0.addCell( new Label( headerCol, headerRow, "Sl.No.", getCellFormat2() ) );
         int c1 = headerCol + 1;

@@ -1719,5 +1719,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
 		<property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     </bean>	
-	
+
+	<!-- MD Report Options -->
+    <bean id="org.hisp.dhis.reports.md.action.GetMDReportOptionsAction"
+        class="org.hisp.dhis.reports.md.action.GetMDReportOptionsAction"
+        scope="prototype">
+		<property name="reportService" ref="org.hisp.dhis.reports.ReportService" />
+    </bean>
+    
 </beans>
