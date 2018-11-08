@@ -1,7 +1,7 @@
 package org.hisp.dhis.reports.analysis.action;
 
-import static org.hisp.dhis.util.ConversionUtils.getIdentifiers;
-import static org.hisp.dhis.util.TextUtils.getCommaDelimitedString;
+import static org.hisp.dhis.system.util.ConversionUtils.getIdentifiers;
+import static org.hisp.dhis.system.util.TextUtils.getCommaDelimitedString;
 
 import java.io.BufferedInputStream;
 import java.io.File;
