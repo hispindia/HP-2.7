@@ -30,6 +30,7 @@ import org.hisp.dhis.i18n.I18nFormat;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroupService;
+import org.hisp.dhis.organisationunit.OrganisationUnitGroupSet;
 import org.hisp.dhis.organisationunit.OrganisationUnitService;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodService;
@@ -197,7 +198,9 @@ public class GenerateAnalysisReportResultAction implements Action
     
     private Map<String, String> orgUnitWiseAggDeMap = new HashMap<String, String>();
     
-    private Map<String, String> orgUnitGroupWiseAggDeMap = new HashMap<String, String>();
+    private Map<String, String> orgUnitGroupSCWiseAggDeMap = new HashMap<String, String>();
+    
+    private Map<String, String> orgUnitGroupSetWiseAggDeMap = new HashMap<String, String>();
     // -------------------------------------------------------------------------
     // Action implementation
     // -------------------------------------------------------------------------
@@ -263,10 +266,11 @@ public class GenerateAnalysisReportResultAction implements Action
         String childOrgUnitsByComma = getCommaDelimitedString( childOrgUnitTreeIds );
         
         orgUnitWiseAggDeMap = new HashMap<String, String>();
-        orgUnitGroupWiseAggDeMap = new HashMap<String, String>();
+        orgUnitGroupSCWiseAggDeMap = new HashMap<String, String>();
+        orgUnitGroupSetWiseAggDeMap = new HashMap<String, String>();
         
         orgUnitWiseAggDeMap.putAll( reportService.getAggDataFromDataValueTable( childOrgUnitsByComma, dataElmentIdsByComma, periodIdsByComma ) );
-        
+        /*
         if( orgUnitGroup != 0 )
         {
             orgUnitList = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( selectedOrgUnit.getId() ) );
@@ -290,8 +294,44 @@ public class GenerateAnalysisReportResultAction implements Action
         {
             orgUnitGroupWiseAggDeMap.putAll( reportService.getAggDataFromDataValueTable( childOrgUnitsByComma, dataElmentIdsByComma, periodIdsByComma ) );
         }
-
+		*/
         
+        // for SC group Data
+        
+        orgUnitList = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( selectedOrgUnit.getId() ) );
+        OrganisationUnitGroup ouGroupSC = organisationUnitGroupService.getOrganisationUnitGroup( 7 );    
+        if( ouGroupSC != null )
+        {
+            orgUnitList.retainAll( ouGroupSC.getMembers() );
+            
+            List<Integer> orgUbnitGroupMembersIds = new ArrayList<Integer>( getIdentifiers( OrganisationUnit.class, orgUnitList ) );
+            String orgUnitGroupMembersIdsByComma = getCommaDelimitedString( orgUbnitGroupMembersIds );
+            //System.out.println( "sub center size -- " + orgUnitGroupMembersIdsByComma.length() );
+            orgUnitGroupSCWiseAggDeMap.putAll( reportService.getAggDataFromDataValueTable( orgUnitGroupMembersIdsByComma, dataElmentIdsByComma, periodIdsByComma ) );
+        }
+        System.out.println( "sub center size -- " + orgUnitGroupSCWiseAggDeMap.size() );
+        // for group set  Data
+        OrganisationUnitGroupSet ouGroupSet = organisationUnitGroupService.getOrganisationUnitGroupSet( 4 );
+        if( ouGroupSet != null )
+        {
+        	List<OrganisationUnit> orgUnitListWithChildrens = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( selectedOrgUnit.getId() )  );
+        	List<OrganisationUnit> units = new ArrayList<OrganisationUnit>();
+
+            for ( OrganisationUnitGroup group : ouGroupSet.getOrganisationUnitGroups() )
+            {
+                units.addAll( group.getMembers() );
+            }
+
+        	
+            orgUnitListWithChildrens.retainAll( units );
+        	//System.out.println( "Group set size -- " + orgUnitListWithChildrens.size() );
+        	//System.out.println( "Group set size -- " + ouGroupSet.getOrganisationUnits().size() );
+        	List<Integer> orgUbnitGroupMembersIds = new ArrayList<Integer>( getIdentifiers( OrganisationUnit.class, orgUnitListWithChildrens ) );
+            String orgUnitGroupMembersIdsByComma = getCommaDelimitedString( orgUbnitGroupMembersIds );
+            //System.out.println( "Group set  -- " + orgUnitGroupMembersIdsByComma );
+            orgUnitGroupSetWiseAggDeMap.putAll( reportService.getAggDataFromDataValueTable( orgUnitGroupMembersIdsByComma, dataElmentIdsByComma, periodIdsByComma ) );
+        }
+        System.out.println( "Group set size -- " + orgUnitGroupSetWiseAggDeMap.size() );
         FileInputStream tempFile = new FileInputStream( new File( inputTemplatePath ) );
         XSSFWorkbook apachePOIWorkbook = new XSSFWorkbook( tempFile );
         
@@ -318,7 +358,7 @@ public class GenerateAnalysisReportResultAction implements Action
             String sType = report_inDesign.getStype();
             String deCodeString = report_inDesign.getExpression();
             String tempStr = "";
-            String tempaGrpStr = "";
+            //String tempaGrpStr = "";
 
             if ( deCodeString.equalsIgnoreCase( "FACILITY" ) )
             {
@@ -385,7 +425,23 @@ public class GenerateAnalysisReportResultAction implements Action
                         
                         tempStr = getAggVal( deCodeString, orgUnitWiseAggDeMap );
                         //tempaGrpStr = getAggVal( deCodeString, orgUnitGroupWiseAggDeMap );
-                        //System.out.println( aggData + " 1 SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr + " -- " + tempaGrpStr );
+                        //System.out.println( aggData + " 1 SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr  );
+                    }
+                }
+                else if ( sType.equalsIgnoreCase( "dataelement_sc_group" ) )
+                {
+                    if( (aggData.equalsIgnoreCase( GENERATEAGGDATA ) ) ) 
+                    {
+                        tempStr = getAggVal( deCodeString, orgUnitGroupSCWiseAggDeMap );
+                        //System.out.println( " USECAPTUREDDATA SC SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr );
+                    }
+                }
+                else if ( sType.equalsIgnoreCase( "dataelement_not_sc_group" ) )
+                {
+                    if( (aggData.equalsIgnoreCase( GENERATEAGGDATA ) ) ) 
+                    {
+                    	tempStr = getAggVal( deCodeString, orgUnitGroupSetWiseAggDeMap );
+                        //System.out.println( " USECAPTUREDDATA GrpSet SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr );
                     }
                 }
             }
@@ -456,6 +512,40 @@ public class GenerateAnalysisReportResultAction implements Action
                         
                     }
                 }
+                else if ( sType.equalsIgnoreCase( "dataelement_sc_group" ) )
+                {
+                    try
+                    {
+                        Row row = sheet0.getRow( tempRowNo );
+                        Cell cell = row.getCell( tempColNo );
+                        cell.setCellValue( Double.parseDouble( tempStr ) );
+                        
+                    }
+                    catch ( Exception e )
+                    {
+                            //System.out.println( " Exception : " + e.getMessage() );
+                            Row row = sheet0.getRow( tempRowNo );
+                            Cell cell = row.getCell( tempColNo );
+                            cell.setCellValue( tempStr );
+                    }
+                }                
+                else if ( sType.equalsIgnoreCase( "dataelement_not_sc_group" ) )
+                {
+                    try
+                    {
+                        Row row = sheet0.getRow( tempRowNo );
+                        Cell cell = row.getCell( tempColNo );
+                        cell.setCellValue( Double.parseDouble( tempStr ) );
+                        
+                    }
+                    catch ( Exception e )
+                    {
+                            //System.out.println( " Exception : " + e.getMessage() );
+                            Row row = sheet0.getRow( tempRowNo );
+                            Cell cell = row.getCell( tempColNo );
+                            cell.setCellValue( tempStr );
+                    }
+                }               
                 /*
                 else if ( sType.equalsIgnoreCase( "dataelement_popultion" )  )
                 {
