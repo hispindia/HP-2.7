@@ -22,6 +22,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hisp.dhis.common.comparator.IdentifiableObjectNameComparator;
 import org.hisp.dhis.config.Configuration_IN;
 import org.hisp.dhis.i18n.I18nFormat;
@@ -143,6 +144,8 @@ public class GenerateUpwardReportAnalyserResultAction
 
     private SimpleDateFormat simpleMonthFormat;
 
+    private SimpleDateFormat yearFormat;
+    
     private Date sDate;
 
     private Date eDate;
@@ -170,6 +173,7 @@ public class GenerateUpwardReportAnalyserResultAction
         simpleDateFormat = new SimpleDateFormat( "MMM-yyyy" );
         monthFormat = new SimpleDateFormat( "MMMM" );
         simpleMonthFormat = new SimpleDateFormat( "MMM" );
+        yearFormat = new SimpleDateFormat( "yyyy" );
         String parentUnit = "";
         
         Report_in selReportObj =  reportService.getReport( Integer.parseInt( reportList ) );
@@ -227,7 +231,7 @@ public class GenerateUpwardReportAnalyserResultAction
 		*/
         
         FileInputStream tempFile = new FileInputStream( new File( inputTemplatePath ) );
-        HSSFWorkbook apachePOIWorkbook = new HSSFWorkbook( tempFile );
+        XSSFWorkbook apachePOIWorkbook = new XSSFWorkbook( tempFile );
         
         // Getting DataValues
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
@@ -311,7 +315,32 @@ public class GenerateUpwardReportAnalyserResultAction
                 else if( deCodeString.equalsIgnoreCase( "MONTH-END" ) )
                 {
                     tempStr = monthFormat.format( eDate );
-                } 
+                }
+                else if( deCodeString.equalsIgnoreCase( "PERIOD-QUARTER" ) )
+                {
+                    String startMonth = "";
+                    String tempYear = yearFormat.format( sDate );
+                    startMonth = monthFormat.format( sDate );
+
+                    if ( startMonth.equalsIgnoreCase( "April" ) )
+                    {
+                        tempStr = "April - June" + " " + tempYear;
+                    }
+                    else if ( startMonth.equalsIgnoreCase( "July" ) )
+                    {
+                        tempStr = "July - September" + " " + tempYear;
+                    }
+                    else if ( startMonth.equalsIgnoreCase( "October" ) )
+                    {
+                        tempStr = "October - December" + " " + tempYear;
+                    }
+                    else
+                    {
+                        tempStr = "January - March" + " " + tempYear;
+                    }
+                }
+                
+                
                 else if( deCodeString.equalsIgnoreCase( "SLNO" ) )
                 {
                     tempStr = "" + ( orgUnitCount + 1 );
@@ -443,6 +472,8 @@ public class GenerateUpwardReportAnalyserResultAction
                 //WritableSheet sheet0 = outputReportWorkbook.getSheet( sheetNo );
                 Sheet sheet0 = apachePOIWorkbook.getSheetAt( sheetNo );
                 
+                //System.out.println( aggData + " 2 SType : " + sType + " DECode : " + deCodeString + "   TempStr : " + tempStr + " " + tempRowNo + " " + tempColNo + " " + sheetNo );
+                
                 if ( tempStr == null || tempStr.equals( " " ) )
                 {
                     tempColNo += orgUnitCount;
@@ -534,7 +565,7 @@ public class GenerateUpwardReportAnalyserResultAction
         FileOutputStream output_file = new FileOutputStream( new File(  outputReportPath ) );  
 
     	//private String outputReportPath;
-        
+        apachePOIWorkbook.setForceFormulaRecalculation(true);
         apachePOIWorkbook.write( output_file ); //write changes
           
         output_file.close();  //close the stream   

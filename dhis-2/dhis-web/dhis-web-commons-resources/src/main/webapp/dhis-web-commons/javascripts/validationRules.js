@@ -205,7 +205,7 @@ var validationRules = {
         },
         "shortName" : {
             "required" : true,
-            "rangelength" : [ 2, 25 ],
+            "rangelength" : [ 2, 50 ],
             "alphanumericwithbasicpuncspaces" : true,
             "notOnlyDigits" : true
         },
