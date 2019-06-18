@@ -37,7 +37,7 @@ import org.hisp.dhis.reports.Report_inDesign;
 import com.opensymphony.xwork2.Action;
 
 public class GenerateUpwardReportAnalyserResultAction
-    implements Action
+    implements Action 
 {
 
     private final String GENERATEAGGDATA = "generateaggdata";
@@ -231,7 +231,7 @@ public class GenerateUpwardReportAnalyserResultAction
 		*/
         
         FileInputStream tempFile = new FileInputStream( new File( inputTemplatePath ) );
-        XSSFWorkbook apachePOIWorkbook = new XSSFWorkbook( tempFile );
+        HSSFWorkbook apachePOIWorkbook = new HSSFWorkbook( tempFile );
         
         // Getting DataValues
         List<Report_inDesign> reportDesignList = reportService.getReportDesign( deCodesXMLFileName );
@@ -278,20 +278,48 @@ public class GenerateUpwardReportAnalyserResultAction
                 } 
                 else if( deCodeString.equalsIgnoreCase( "FACILITYP" ) )
                 {
-                    tempStr = currentOrgUnit.getParent().getName();
+                    if( currentOrgUnit.getParent() != null )
+                    {
+                        tempStr = currentOrgUnit.getParent().getName();
+                    }
+                    else
+                    {
+                        tempStr = "";
+                    }
                 } 
                 else if( deCodeString.equalsIgnoreCase( "FACILITYPP" ) )
                 {
-                    tempStr = currentOrgUnit.getParent().getParent().getName();
+                    if( currentOrgUnit.getParent().getParent() != null )
+                    {
+                        tempStr = currentOrgUnit.getParent().getParent().getName();
+                    }
+                    else
+                    {
+                        tempStr = "";
+                    }
                 } 
                 else if( deCodeString.equalsIgnoreCase( "FACILITYPPP" ) )
                 {
-                    tempStr = currentOrgUnit.getParent().getParent().getParent().getName();
+                    if( currentOrgUnit.getParent().getParent().getParent() != null )
+                    {
+                        tempStr = currentOrgUnit.getParent().getParent().getParent().getName();
+                    }
+                    else
+                    {
+                        tempStr = "";
+                    }
                 } 
                 else if( deCodeString.equalsIgnoreCase( "FACILITYPPPP" ) )
                 {
-                    tempStr = currentOrgUnit.getParent().getParent().getParent().getParent().getName();
-                } 
+                    if( currentOrgUnit.getParent().getParent().getParent().getParent() != null )
+                    {
+                        tempStr = currentOrgUnit.getParent().getParent().getParent().getParent().getName();
+                    }
+                    else
+                    {
+                        tempStr = "";
+                    }
+                }
                 else if( deCodeString.equalsIgnoreCase( "PERIOD" ) || deCodeString.equalsIgnoreCase( "PERIOD-NOREPEAT" ) )
                 {
                     tempStr = simpleDateFormat.format( sDate );
@@ -565,7 +593,7 @@ public class GenerateUpwardReportAnalyserResultAction
         FileOutputStream output_file = new FileOutputStream( new File(  outputReportPath ) );  
 
     	//private String outputReportPath;
-        apachePOIWorkbook.setForceFormulaRecalculation(true);
+        //apachePOIWorkbook.setForceFormulaRecalculation(true);
         apachePOIWorkbook.write( output_file ); //write changes
           
         output_file.close();  //close the stream   

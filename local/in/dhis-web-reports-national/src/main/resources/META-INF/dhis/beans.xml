@@ -1746,6 +1746,23 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="organisationUnitGroupService" ref="org.hisp.dhis.organisationunit.OrganisationUnitGroupService" />
     </bean>	
 	
+    <!-- Kayakalp Report -->
+    <bean
+        id="org.hisp.dhis.reports.kayakalp.action.GenerateKayakalpReportAnalyserFormAction"
+        class="org.hisp.dhis.reports.kayakalp.action.GenerateKayakalpReportAnalyserFormAction"
+        scope="prototype">
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+    </bean>
+    
+    <bean
+        id="org.hisp.dhis.reports.kayakalp.action.GenerateKayakalpReportAnalyserResultAction"
+        class="org.hisp.dhis.reports.kayakalp.action.GenerateKayakalpReportAnalyserResultAction"
+        scope="prototype">
+        <!--<property name="statementManager" ref="statementManager"/>-->
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService" />
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService" />
+        <property name="reportService" ref="org.hisp.dhis.reports.ReportService" />
+    </bean>
 
     
 </beans>

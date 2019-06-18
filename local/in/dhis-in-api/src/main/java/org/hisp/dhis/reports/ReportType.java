@@ -75,6 +75,8 @@ public class ReportType
     public final static String RT_HOSPITAL_REPORT = "Hospital Reports";
     
     public final static String RT_FACILITY_ORGUNITWISEPROGRESS = "Facility Based OrgUnitWise Progress";
+    
+    public final static String RT_KAYAKALP_REPORT = "Kayakalp Report";
 
     public static List<String> getReportTypes()
     {
@@ -123,6 +125,8 @@ public class ReportType
         reportTypes.add(RT_HOSPITAL_REPORT);
         
         reportTypes.add(RT_FACILITY_ORGUNITWISEPROGRESS);
+        
+        reportTypes.add(RT_KAYAKALP_REPORT);
         
         return reportTypes;
     }

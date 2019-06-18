@@ -90,7 +90,9 @@
 			<li><a href = "analysisReportAnalyser.action">Analysis Reports</a></li>
 		#end	
 
-
+		#if( $auth.hasAccess( "dhis-web-reports", "kayakalpReportAnalyser") )
+			<li><a href = "kayakalpReportAnalyser.action">Kayakalp Reports</a></li>
+		#end
 		
 		<!--<li><a href = "advancedReportAnalyser.action">Advanced Reports</a></li>-->
 	</ul>
