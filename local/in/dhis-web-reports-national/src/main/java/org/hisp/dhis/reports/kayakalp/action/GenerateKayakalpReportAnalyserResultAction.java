@@ -355,9 +355,15 @@ public class GenerateKayakalpReportAnalyserResultAction
                 {
                     String startMonth = "";
                     String tempYear = yearFormat.format( sDate );
+                    int nextYear = Integer.parseInt( tempYear ) + 1;
                     startMonth = monthFormat.format( sDate );
 
-                    if ( startMonth.equalsIgnoreCase( "April" ) )
+                    if ( startMonth.equalsIgnoreCase( "January" ) )
+                    {
+                        tempStr = "January - March" + " " + tempYear;
+                    }
+                    
+                    else if ( startMonth.equalsIgnoreCase( "April" ) )
                     {
                         tempStr = "April - June" + " " + tempYear;
                     }
@@ -368,10 +374,6 @@ public class GenerateKayakalpReportAnalyserResultAction
                     else if ( startMonth.equalsIgnoreCase( "October" ) )
                     {
                         tempStr = "October - December" + " " + tempYear;
-                    }
-                    else
-                    {
-                        tempStr = "January - March" + " " + Integer.parseInt( tempYear ) + 1;
                     }
                 }
 
