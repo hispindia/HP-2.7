@@ -52,6 +52,7 @@
 		#if( $auth.hasAccess( "dhis-web-reports", "dataSetLockReportAnalyser") )
 			<li><a href = "dataSetLockReportAnalyser.action">DataSet Lock Reports</a></li>
 		#end
+		<!--
 		#if( $auth.hasAccess( "dhis-web-reports", "quarterlyPhysicalReport") )
 			<li><a href = "quarterlyPhysicalReport.action ">Quarterly Physical Output Reports</a></li>
 		#end
@@ -61,9 +62,11 @@
 		#if( $auth.hasAccess( "dhis-web-reports", "csReviewReportForm") )
 			<li><a href = "csReviewReportForm.action">CS Review Reports</a></li>
 		#end
+		
 		#if( $auth.hasAccess( "dhis-web-reports", "populateUsers") )
 			<li><a href = "populateUsers.action">Populate Users</a></li>
 		#end
+		-->
 		<!--#if( $auth.hasAccess( "dhis-web-reports", "autoReportAnalyser") )
 			<li><a href = "autoReportAnalyser.action">Bulk Reports</a></li>
 		#end-->
@@ -93,7 +96,9 @@
 		#if( $auth.hasAccess( "dhis-web-reports", "kayakalpReportAnalyser") )
 			<li><a href = "kayakalpReportAnalyser.action">Kayakalp Reports</a></li>
 		#end
-		
+		#if( $auth.hasAccess( "dhis-web-reports", "kayakalpBaselineReportAnalyser") )
+			<li><a href = "kayakalpBaselineReportAnalyser.action">Kayakalp Baseline Reports</a></li>
+		#end
 		<!--<li><a href = "advancedReportAnalyser.action">Advanced Reports</a></li>-->
 	</ul>
 </ul>
