@@ -266,8 +266,12 @@ public class GenerateKayakalpBaseLineReportAnalyserResultAction implements Actio
         else if( selectedOrgUnitLevel == 3 )
         {
             List<String> kayaKalpGroups = new ArrayList<String>();
-            kayaKalpGroups.add("22");kayaKalpGroups.add("23");kayaKalpGroups.add("24");kayaKalpGroups.add("21");
-            kayaKalpGroups.add("24");kayaKalpGroups.add("25");kayaKalpGroups.add("26");
+            kayaKalpGroups.add("22");
+            kayaKalpGroups.add("23");
+            kayaKalpGroups.add("21");
+            kayaKalpGroups.add("24");
+            kayaKalpGroups.add("25");
+            kayaKalpGroups.add("26");
             //getOrgUnitAttributeValueMap();
             List<OrganisationUnit> childOrgUnitTree = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( selectedOrgUnit.getId() ) );
             //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " child Tree Count " + childOrgUnitTree.size());
