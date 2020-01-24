@@ -265,77 +265,90 @@ public class GenerateKayakalpBaseLineReportAnalyserResultAction implements Actio
 
         else if( selectedOrgUnitLevel == 3 )
         {
-            List<String> kayaKalpGroups = new ArrayList<String>();
-            kayaKalpGroups.add("22");
-            kayaKalpGroups.add("23");
-            kayaKalpGroups.add("21");
-            kayaKalpGroups.add("24");
-            kayaKalpGroups.add("25");
-            kayaKalpGroups.add("26");
-            //getOrgUnitAttributeValueMap();
             List<OrganisationUnit> childOrgUnitTree = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( selectedOrgUnit.getId() ) );
-            //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " child Tree Count " + childOrgUnitTree.size());
-            //Set<OrganisationUnit> dataSetSource = new HashSet<OrganisationUnit>();
             List<OrganisationUnit> orgUnitGroupMembers = new ArrayList<OrganisationUnit>();
-            
-            /*
-            OrganisationUnitGroupSet  organisationUnitGroupSet = organisationUnitGroupService.getOrganisationUnitGroupSetByName( "Kayakalp" );
-            if( organisationUnitGroupSet != null )
+            if( selReportObj.getOrgunitGroup() != null )
             {
-                List<OrganisationUnitGroup> orgUnitGroupSetGroups = new ArrayList<OrganisationUnitGroup>( organisationUnitGroupSet.getSortedGroups() );
-                if( orgUnitGroupSetGroups != null && orgUnitGroupSetGroups.size() > 0 )
+                orgUnitGroupMembers.addAll( selReportObj.getOrgunitGroup().getMembers() );
+                orgUnitGroupMembers.retainAll( childOrgUnitTree );
+                orgUnitList.addAll( orgUnitGroupMembers );
+            }
+            else
+            {
+                List<String> kayaKalpGroups = new ArrayList<String>();
+                kayaKalpGroups.add("22"); // for KayaKalp DH
+                kayaKalpGroups.add("23"); // for KayaKalp SDH
+                kayaKalpGroups.add("21"); // for KayaKalp CH
+                kayaKalpGroups.add("24"); // for KayaKalp CHC
+                //kayaKalpGroups.add("25"); // for KayaKalp PHC
+                //kayaKalpGroups.add("26"); // for KayaKalp sub-center
+                //getOrgUnitAttributeValueMap();
+                
+                //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " child Tree Count " + childOrgUnitTree.size());
+                //Set<OrganisationUnit> dataSetSource = new HashSet<OrganisationUnit>();
+                
+                
+                /*
+                OrganisationUnitGroupSet  organisationUnitGroupSet = organisationUnitGroupService.getOrganisationUnitGroupSetByName( "Kayakalp" );
+                if( organisationUnitGroupSet != null )
                 {
-                    for( OrganisationUnitGroup orgUnitGroup : orgUnitGroupSetGroups)
+                    List<OrganisationUnitGroup> orgUnitGroupSetGroups = new ArrayList<OrganisationUnitGroup>( organisationUnitGroupSet.getSortedGroups() );
+                    if( orgUnitGroupSetGroups != null && orgUnitGroupSetGroups.size() > 0 )
                     {
-                        System.out.println( organisationUnitGroupSet.getName() + " : " + orgUnitGroup.getName() + " : grpMem Count " + orgUnitGroup.getMembers().size());
+                        for( OrganisationUnitGroup orgUnitGroup : orgUnitGroupSetGroups)
+                        {
+                            System.out.println( organisationUnitGroupSet.getName() + " : " + orgUnitGroup.getName() + " : grpMem Count " + orgUnitGroup.getMembers().size());
+                            orgUnitGroupMembers.addAll( orgUnitGroup.getMembers() );
+                        }
+                    }
+                }
+                */
+                
+                for( String orgGrp : kayaKalpGroups)
+                {
+                    OrganisationUnitGroup orgUnitGroup = organisationUnitGroupService.getOrganisationUnitGroup( Integer.parseInt( orgGrp ) );
+                    //System.out.println( " : " + orgUnitGroup.getName() + " : grpMem Count " + orgUnitGroup.getMembers().size());
+                    if( orgUnitGroup != null && orgUnitGroup.getMembers().size() > 0 )
+                    {
                         orgUnitGroupMembers.addAll( orgUnitGroup.getMembers() );
                     }
                 }
-            }
-            */
-            
-            for( String orgGrp : kayaKalpGroups)
-            {
-                OrganisationUnitGroup orgUnitGroup = organisationUnitGroupService.getOrganisationUnitGroup( Integer.parseInt( orgGrp ) );
-                //System.out.println( " : " + orgUnitGroup.getName() + " : grpMem Count " + orgUnitGroup.getMembers().size());
-                if( orgUnitGroup != null && orgUnitGroup.getMembers().size() > 0 )
+                
+                /*
+                for( String dsId : kayaKalpDataSetList )
                 {
-                    orgUnitGroupMembers.addAll( orgUnitGroup.getMembers() );
+                    DataSet ds = dataSetService.getDataSet( Integer.parseInt( dsId ) );
+                    //System.out.println(  " data set : " + ds.getName() + " ds source count Count " + ds.getSources().size());
+                    if( ds != null && ds.getSources().size() > 0 )
+                    {
+                        dataSetSource.addAll( ds.getSources() );
+                    }
                 }
+                */
+                
+                //orgUnitList = new ArrayList<OrganisationUnit>( getDataSetSources( dataSetIdsByComma ));
+                //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " dsSource Count " + dataSetSource.size());
+                //dataSetSource.retainAll( childOrgUnitTree );
+                //orgUnitList.addAll( dataSetSource );
+                orgUnitGroupMembers.retainAll( childOrgUnitTree );
+                orgUnitList.addAll( orgUnitGroupMembers );
+                
+                //orgUnitList = new ArrayList<OrganisationUnit>(new HashSet<>( orgUnitList ));
+                
+                //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " final ou Count " + orgUnitList.size());
+                //orgUnitList.add( selectedOrgUnit );
+                //Collections.sort( orgUnitList, new IdentifiableObjectNameComparator() );
             }
-            
-            /*
-            for( String dsId : kayaKalpDataSetList )
-            {
-                DataSet ds = dataSetService.getDataSet( Integer.parseInt( dsId ) );
-                //System.out.println(  " data set : " + ds.getName() + " ds source count Count " + ds.getSources().size());
-                if( ds != null && ds.getSources().size() > 0 )
-                {
-                    dataSetSource.addAll( ds.getSources() );
-                }
-            }
-            */
-            
-            //orgUnitList = new ArrayList<OrganisationUnit>( getDataSetSources( dataSetIdsByComma ));
-            //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " dsSource Count " + dataSetSource.size());
-            //dataSetSource.retainAll( childOrgUnitTree );
-            //orgUnitList.addAll( dataSetSource );
-            orgUnitGroupMembers.retainAll( childOrgUnitTree );
-            orgUnitList.addAll( orgUnitGroupMembers );
-            
-            //orgUnitList = new ArrayList<OrganisationUnit>(new HashSet<>( orgUnitList ));
-            
-            //System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " final ou Count " + orgUnitList.size());
-            //orgUnitList.add( selectedOrgUnit );
-            //Collections.sort( orgUnitList, new IdentifiableObjectNameComparator() );
         }
-        
+        /*
         else
         {
             System.out.println( selectedOrgUnit.getName() + " : " + selectedOrgUnitLevel );
-            //getOrgUnitAttributeValueMap();
             orgUnitList.add( selectedOrgUnit );
         }
+        */
+        
+        System.out.println( selectedOrgUnit.getName() + " Level : " + selectedOrgUnitLevel + " final ou Count " + orgUnitList.size() );
         
         inputTemplatePath = System.getenv( "DHIS2_HOME" ) + File.separator + raFolderName + File.separator
             + "template" + File.separator + reportFileNameTB;
@@ -360,6 +373,12 @@ public class GenerateKayakalpBaseLineReportAnalyserResultAction implements Actio
         {
             OrganisationUnit currentOrgUnit = (OrganisationUnit) it.next();
             List<OrganisationUnit> childOrgUnitTree = new ArrayList<OrganisationUnit>( organisationUnitService.getOrganisationUnitWithChildren( currentOrgUnit.getId() ) );
+            
+            if( selReportObj.getOrgunitGroup() != null )
+            {
+                childOrgUnitTree.retainAll( selReportObj.getOrgunitGroup().getMembers() );
+            }
+            
             List<Integer> childOrgUnitTreeIds = new ArrayList<Integer>( getIdentifiers( OrganisationUnit.class, childOrgUnitTree ) );
             String childOrgUnitsByComma = getCommaDelimitedString( childOrgUnitTreeIds );
             
@@ -682,7 +701,7 @@ public class GenerateKayakalpBaseLineReportAnalyserResultAction implements Actio
                            "INNER JOIN orgunitgroupmembers orgGrpMem ON orgGrpMem.orgunitgroupid = orgGrpsetMem.orgunitgroupid " + 
                            "INNER JOIN orgunitgroupset orgGrpSet ON orgGrpSet.orgunitgroupsetid = orgGrpsetMem.orgunitgroupsetid " +
                            "INNER JOIN orgunitgroup orgGrp ON orgGrp.orgunitgroupid = orgGrpMem.orgunitgroupid " + 
-                           "WHERE orgGrpSet.name = 'Kayakalp'";
+                           "WHERE orgGrpSet.name IN ( 'Kayakalp CHC/CH/DH', 'Kayakalp PHC Bedded', 'Kayakalp PHC Non Bedded' )";
               
             //System.out.println( "data-set-Query - " + query );
             SqlRowSet rs = jdbcTemplate.queryForRowSet( query );
