@@ -48,7 +48,11 @@
       <groupId>org.hisp.dhis</groupId>
       <artifactId>dhis-service-reporting</artifactId>
     </dependency>
-	
+	<dependency>
+      <groupId>org.hisp.dhis</groupId>
+      <artifactId>dhis-in-service-survey</artifactId>
+      <version>${project.version}</version>
+    </dependency>	
     
     <!-- Other -->
     

@@ -1,8 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+
+
+	<!--  for Scheduled SMS -->
+	<!--  for RunAggregation Query By Scheduler -->
+   	<task:scheduled-tasks scheduler="dataValueScheduler">
+        <task:scheduled ref="org.hisp.dhis.reports.smsscheduling.action.ScheduleDataValueMoveAction" method="execute" cron="0 0/5 * * * ?"/>
+        <!--
+        <task:scheduled ref="org.hisp.dhis.reports.smsscheduling.action.ScheduleSMSAction" method="scheduledAdverseEventSMS" cron="0 16 13 * * ?"/>
+        <task:scheduled ref="org.hisp.dhis.reports.smsscheduling.action.ScheduleSMSAction" method="scheduledNonReportingFacilitySMS" cron="0 42 14 * * ?"/>
+        <task:scheduled ref="org.hisp.dhis.reports.smsscheduling.action.ScheduleSMSAction" method="scheduledKeyPerformanceIndicatorsSMS" cron="0 3 16 * * ?"/>
+        -->
+   	</task:scheduled-tasks>
+	
+	<!-- 0 0 0/1 1/1 * ? schedule  every day every hour -->
+	
+	<!-- value="0 0/30 * * * ?" // for every 30 minute -->
+	<task:scheduler id="dataValueScheduler" pool-size="1"/>
+	
+	<bean id="org.hisp.dhis.reports.smsscheduling.action.ScheduleDataValueMoveAction"
+		class="org.hisp.dhis.reports.smsscheduling.action.ScheduleDataValueMoveAction"
+		scope="prototype">		
+		<!--<property name="jdbcTemplate" ref="jdbcTemplate"/>-->
+		
+		<property name="dataElementService" ref="org.hisp.dhis.dataelement.DataElementService"/>
+		<property name="dataElementCategoryService" ref="org.hisp.dhis.dataelement.DataElementCategoryService"/>
+        <property name="organisationUnitService" ref="org.hisp.dhis.organisationunit.OrganisationUnitService"/>
+        <property name="periodService" ref="org.hisp.dhis.period.PeriodService"/>
+        <property name="indicatorService" ref="org.hisp.dhis.indicator.IndicatorService"/>
+        
+	</bean>    
+
     
     <!-- Reports -->
     <bean id="org.hisp.dhis.reports.action.ReportsHomePageAction"
