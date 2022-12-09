@@ -778,7 +778,7 @@
   <properties>
     <rootDir></rootDir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring.version>3.1.0.RELEASE</spring.version>
+    <spring.version>6.0.0</spring.version>
     <spring.security.version>3.0.7.RELEASE</spring.security.version>
     <hibernate.version>3.6.9.Final</hibernate.version>
   </properties>
